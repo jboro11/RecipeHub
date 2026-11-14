@@ -1,0 +1,22 @@
+@model RecipeHub.Domain.Entities.Recipe
+@{
+    var average = Model.AverageRating;
+    var stars = (int)Math.Round(average ?? 0, MidpointRounding.AwayFromZero);
+}
+
+@if (average.HasValue)
+{
+    <span class="recipe-rating" aria-label="Hodnocení @average.Value.ToString("0.0") z 5, počet hlasů: @Model.Ratings.Count">
+        <span aria-hidden="true">
+            @for (var i = 1; i <= 5; i++)
+            {
+                <span class="@(i <= stars ? "rating-star-filled" : "rating-star-empty")">★</span>
+            }
+        </span>
+        <small>@average.Value.ToString("0.0") / 5 (@Model.Ratings.Count)</small>
+    </span>
+}
+else
+{
+    <span class="text-muted">Zatím nehodnoceno</span>
+}

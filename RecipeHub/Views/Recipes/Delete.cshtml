@@ -1,0 +1,13 @@
+@model RecipeHub.Domain.Entities.Recipe
+@{
+    ViewData["Title"] = "Smazat recept";
+}
+
+<div class="card bg-dark border-secondary p-4">
+    <h1 class="h3">Smazat recept</h1>
+    <p>Opravdu chceš smazat recept <strong>@Model.Title</strong>? Smažou se i jeho ingredience a hodnocení.</p>
+    <form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="d-flex gap-2">
+        <button type="submit" class="btn btn-danger">Smazat recept</button>
+        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Zrušit</a>
+    </form>
+</div>

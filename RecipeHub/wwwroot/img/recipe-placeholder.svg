@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+  <rect width="800" height="500" fill="#211d18"/>
+  <circle cx="400" cy="230" r="112" fill="#30281e" stroke="#ffb74d" stroke-width="4"/>
+  <circle cx="400" cy="230" r="84" fill="none" stroke="#ffb74d" stroke-opacity=".4" stroke-width="2"/>
+  <path d="M247 139v62q0 22 20 22v100m-20-184v47m20-47v47m20-47v62q0 22-20 22m272-84q-28 42-23 92h23v92V139Z" fill="none" stroke="#ffb74d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="400" y="405" text-anchor="middle" font-family="Arial,sans-serif" font-size="25" fill="#b0b0b0">RecipeHub</text>
+</svg>

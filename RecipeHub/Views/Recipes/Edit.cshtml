@@ -1,0 +1,22 @@
+@model RecipeHub.Application.ViewModels.RecipeInputModel
+@{
+    ViewData["Title"] = "Upravit recept";
+}
+
+<div class="card bg-dark border-secondary shadow-sm recipe-form-card">
+    <div class="card-body">
+        <h2 class="mb-3 text-light">Upravit recept</h2>
+        <form asp-action="Edit" method="post" id="recipe-form">
+            <partial name="_RecipeForm" model="Model" />
+            <div class="mt-4 d-flex gap-3">
+                <button type="submit" class="btn btn-primary px-4">Uložit recept</button>
+                <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/recipe-form.js" asp-append-version="true"></script>
+}

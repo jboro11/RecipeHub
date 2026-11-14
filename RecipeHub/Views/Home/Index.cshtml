@@ -1,0 +1,121 @@
+@model IReadOnlyList<RecipeHub.Domain.Entities.Recipe>
+
+
+
+
+@{
+    ViewData["Title"] = "RecipeHub - Domov";
+}
+
+<!-- Hero sekce -->
+<div class="hero-header">
+    <h1 class="hero-title">Umění chuti</h1>
+    <p class="hero-text">
+        Objevte prémiové recepty pro výjimečné chvíle.
+        Vařte s vášní a chutí.
+    </p>
+    <a asp-controller="Recipes" asp-action="Index" class="btn-gold">Prohlédnout recepty</a>
+</div>
+
+<!-- Výběr šéfkuchaře -->
+<div class="container">
+    <div class="row" style="margin-bottom: 40px;">
+        <div class="col-12 text-center">
+            <h2 style="color: var(--accent);">Výběr šéfkuchaře</h2>
+            <p style="color: var(--text-muted);">Nejlépe hodnocené recepty od uživatelů</p>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var recipe in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <a asp-controller="Recipes" asp-action="Details" asp-route-id="@recipe.Id" class="text-decoration-none">
+                        <div class="recipe-card clickable-card">
+                            @if (!string.IsNullOrEmpty(recipe.ImageUrl))
+                            {
+                                <img src="@recipe.ImageUrl" data-recipe-image="@Url.Content("~/img/recipe-placeholder.svg")" class="recipe-img" alt="@recipe.Title" loading="lazy">
+                            }
+                            else
+                            {
+                                <div class="recipe-img d-flex align-items-center justify-content-center bg-secondary">
+                                    <span class="text-muted">Bez obrázku</span>
+                                </div>
+                            }
+                            <div class="card-body">
+                                <h5 class="card-title">@recipe.Title</h5>
+                                <p class="card-text">@(recipe.ShortDescription ?? recipe.Description.Substring(0, Math.Min(100, recipe.Description.Length)) + "...")</p>
+                            </div>
+                            <div class="card-info">
+                                <span>⏱ @recipe.PrepTime</span>
+                                <span><partial name="_RecipeDifficulty" model="recipe.Difficulty" /></span>
+                                <partial name="_RecipeRating" model="recipe" />
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12 text-center">
+                <p style="color: var(--text-muted);">Zatím nejsou k dispozici žádné recepty.</p>
+                <a asp-controller="Recipes" asp-action="Create" class="btn-gold">Přidat první recept</a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Sekce kategorií -->
+<div class="container mt-5">
+    <div class="row text-center mb-4">
+        <div class="col-12">
+            <h2 style="color: var(--accent);">Prozkoumejte kategorie</h2>
+            <p style="color: var(--text-muted);">Najděte recept podle vašeho vkusu</p>
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div class="col-6 col-md-2 mb-3">
+            <a asp-controller="Recipes" asp-action="Index" asp-route-category="Snídaně" class="text-decoration-none">
+                <div class="category-card">
+                    <span class="category-icon">🍳</span>
+                    <span class="category-name">Snídaně</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2 mb-3">
+            <a asp-controller="Recipes" asp-action="Index" asp-route-category="Polévky" class="text-decoration-none">
+                <div class="category-card">
+                    <span class="category-icon">🍲</span>
+                    <span class="category-name">Polévky</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2 mb-3">
+            <a asp-controller="Recipes" asp-action="Index" asp-route-category="Hlavní jídlo" class="text-decoration-none">
+                <div class="category-card">
+                    <span class="category-icon">🍝</span>
+                    <span class="category-name">Hlavní jídla</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2 mb-3">
+            <a asp-controller="Recipes" asp-action="Index" asp-route-category="Dezert" class="text-decoration-none">
+                <div class="category-card">
+                    <span class="category-icon">🍰</span>
+                    <span class="category-name">Dezerty</span>
+                </div>
+            </a>
+        </div>
+        <div class="col-6 col-md-2 mb-3">
+            <a asp-controller="Recipes" asp-action="Index" asp-route-category="Nápoje" class="text-decoration-none">
+                <div class="category-card">
+                    <span class="category-icon">🍹</span>
+                    <span class="category-name">Nápoje</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</div>

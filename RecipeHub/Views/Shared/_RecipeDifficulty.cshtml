@@ -1,0 +1,12 @@
+@model int
+@{
+    var index = Math.Clamp(Model, 1, 3) - 1;
+    var icons = new[] { "Easy_icon.png", "inter_icon.png", "hard_icon.png" };
+    var labels = new[] { "Lehké", "Střední", "Náročné" };
+    var classes = new[] { "difficulty-easy", "difficulty-medium", "difficulty-hard" };
+}
+
+<span class="recipe-difficulty @classes[index]">
+    <img src="~/img/@icons[index]" alt="" width="20" height="20" />
+    <span>@labels[index]</span>
+</span>

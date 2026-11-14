@@ -1,0 +1,118 @@
+@model IEnumerable<RecipeHub.Domain.Entities.Recipe>
+
+
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> UserManager
+
+
+@{
+    var currentCategory = ViewBag.CurrentCategory as string;
+    ViewData["Title"] = currentCategory != null ? $"Recepty - {currentCategory}" : "Recepty";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div>
+        <h1 class="text-light mb-0">
+            @if (currentCategory != null)
+            {
+                <span>Recepty: @currentCategory</span>
+            }
+            else
+            {
+                <span>Recepty</span>
+            }
+        </h1>
+        @if (currentCategory != null)
+        {
+            <a asp-action="Index" class="btn btn-outline-light btn-sm mt-2">
+                ✕ Zrušit filtr
+            </a>
+        }
+    </div>
+    <a class="btn btn-primary px-4 shadow-sm" asp-action="Create">+ Přidat recept</a>
+</div>
+
+<!-- Filtr kategorií -->
+<div class="mb-4">
+    <div class="d-flex flex-wrap gap-2">
+        <a asp-action="Index" class="btn @(currentCategory == null ? "btn-warning" : "btn-outline-secondary")">
+            Všechny
+        </a>
+        <a asp-action="Index" asp-route-category="Snídaně" class="btn @(currentCategory == "Snídaně" ? "btn-warning" : "btn-outline-secondary")">
+            🍳 Snídaně
+        </a>
+        <a asp-action="Index" asp-route-category="Polévky" class="btn @(currentCategory == "Polévky" ? "btn-warning" : "btn-outline-secondary")">
+            🍲 Polévky
+        </a>
+        <a asp-action="Index" asp-route-category="Hlavní jídlo" class="btn @(currentCategory == "Hlavní jídlo" ? "btn-warning" : "btn-outline-secondary")">
+            🍝 Hlavní jídla
+        </a>
+        <a asp-action="Index" asp-route-category="Dezert" class="btn @(currentCategory == "Dezert" ? "btn-warning" : "btn-outline-secondary")">
+            🍰 Dezerty
+        </a>
+        <a asp-action="Index" asp-route-category="Nápoje" class="btn @(currentCategory == "Nápoje" ? "btn-warning" : "btn-outline-secondary")">
+            🍹 Nápoje
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center py-5">
+            <p class="text-muted fs-5">
+                @if (currentCategory != null)
+                {
+                    <span>V kategorii <strong>@currentCategory</strong> zatím nejsou žádné recepty.</span>
+                }
+                else
+                {
+                    <span>Zatím nejsou k dispozici žádné recepty.</span>
+                }
+            </p>
+            <a asp-action="Create" class="btn btn-primary">+ Přidat první recept</a>
+        </div>
+    }
+    @foreach (var item in Model)
+    {
+        <div class="col-12 col-md-6 col-xl-4">
+            <div class="card modern-card h-100">
+                <a asp-action="Details" asp-route-id="@item.Id" class="card-link-wrapper">
+                    <div class="ratio ratio-16x9">
+                        @if (!string.IsNullOrEmpty(item.ImageUrl))
+                        {
+                            <img src="@item.ImageUrl" data-recipe-image="@Url.Content("~/img/recipe-placeholder.svg")" alt="@item.Title" class="card-img-top" style="object-fit:cover;" loading="lazy">
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center bg-secondary text-dark fw-semibold">Bez obrázku</div>
+                        }
+                    </div>
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title mb-1">@item.Title</h5>
+                        @if (!string.IsNullOrEmpty(item.ShortDescription))
+                        {
+                            <p class="card-text text-muted small mb-3">@item.ShortDescription</p>
+                        }
+                    </div>
+                </a>
+                <div class="card-info d-flex justify-content-between align-items-center px-3 pb-3">
+                    <div class="d-flex gap-3 align-items-center flex-wrap">
+                        <span>⏱ @item.PrepTime</span>
+                        <partial name="_RecipeRating" model="item" />
+                        <span><partial name="_RecipeDifficulty" model="item.Difficulty" /></span>
+                    </div>
+                    <div>
+                        @if (User.IsInRole("Admin") || (item.OwnerId != null && item.OwnerId == UserManager.GetUserId(User)))
+                        {
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-2">Upravit</a>
+                            <form asp-action="Delete" asp-route-id="@item.Id" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Opravdu chcete tento recept smazat?');">Smazat</button>
+                            </form>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

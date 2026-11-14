@@ -1,0 +1,83 @@
+@model RecipeHub.Domain.Entities.Recipe
+@using System.Security.Claims
+@{
+    ViewData["Title"] = Model.Title;
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var ownRating = Model.Ratings.FirstOrDefault(r => r.UserId == userId && userId != null);
+    var canManage = User.IsInRole("Admin") || (Model.OwnerId != null && Model.OwnerId == userId);
+}
+
+@if (TempData["StatusMessage"] is string message)
+{
+    <div class="alert alert-success" role="status">@message</div>
+}
+
+<div class="card bg-dark border-secondary shadow-sm mb-4 recipe-form-card">
+    <div class="row g-0">
+        <div class="col-md-5">
+            @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" data-recipe-image="@Url.Content("~/img/recipe-placeholder.svg")" alt="@Model.Title" class="recipe-detail-image" />
+            }
+            else
+            {
+                <div class="recipe-detail-image d-flex align-items-center justify-content-center text-muted">Bez obrázku</div>
+            }
+        </div>
+        <div class="col-md-7 p-4">
+            <h1 class="h2 text-light mb-1">@Model.Title</h1>
+            <div class="text-muted mb-2">@(Model.CategoryNavigation?.Name ?? Model.Category)</div>
+            <partial name="_RecipeRating" model="Model" />
+            @if (!string.IsNullOrWhiteSpace(Model.ShortDescription))
+            {
+                <p class="mt-3 fst-italic">@Model.ShortDescription</p>
+            }
+            <div class="d-flex flex-wrap align-items-center gap-4 my-4">
+                <span><strong>Čas přípravy:</strong> @Model.PrepTime</span>
+                <partial name="_RecipeDifficulty" model="Model.Difficulty" />
+            </div>
+            <h2 class="h5">Ingredience</h2>
+            <ul>
+                @foreach (var ingredient in Model.Ingredients)
+                {
+                    <li>@ingredient.Name @(!string.IsNullOrWhiteSpace(ingredient.Quantity) ? $"– {ingredient.Quantity}" : "")</li>
+                }
+            </ul>
+            <h2 class="h5">Postup přípravy</h2>
+            <p class="recipe-instructions">@Model.Description</p>
+            <div class="d-flex flex-wrap justify-content-end gap-2 mt-4">
+                @if (canManage)
+                {
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Upravit</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">Smazat</a>
+                }
+                <a asp-action="Index" class="btn btn-secondary">Zpět na seznam</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card bg-dark border-secondary p-4 mb-4">
+    <h2 class="h4">Hodnocení receptu</h2>
+    @if (User.Identity?.IsAuthenticated == true)
+    {
+        <p class="text-muted">Každý uživatel má jeden hlas. Své hodnocení můžeš kdykoliv změnit.</p>
+        <form asp-action="Rate" asp-route-id="@Model.Id" method="post" class="d-flex flex-wrap align-items-end gap-2">
+            <div>
+                <label for="score" class="form-label">Tvoje hodnocení</label>
+                <select id="score" name="score" class="form-select" required>
+                    <option value="">Vyber hodnocení</option>
+                    @for (var score = 1; score <= 5; score++)
+                    {
+                        <option value="@score" selected="@(ownRating?.Score == score)">@score z 5</option>
+                    }
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">@(ownRating is null ? "Ohodnotit" : "Změnit hodnocení")</button>
+        </form>
+    }
+    else
+    {
+        <p class="mb-0">Pro hodnocení se <a asp-area="Security" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Context.Request.Path">přihlas</a>.</p>
+    }
+</div>
